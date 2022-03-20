@@ -54,3 +54,6 @@ class AddressBook(ManagerAccessMixin):
         global_config = self.global_config
         global_config[alias] = to_address(address)
         self.global_config_file.write_text(json.dumps({"entries": global_config}))
+
+
+addressbook = AddressBook()
