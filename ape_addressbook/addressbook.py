@@ -20,7 +20,10 @@ class AddressBook(ManagerAccessMixin):
     def global_config(self) -> Dict[str, AddressType]:
         if self.global_config_file.exists():
             global_config_raw_dict = json.loads(self.global_config_file.read_text())
-            return {k: self.provider.network.ecosystem.decode_address(v) for k, v in global_config_raw_dict["entries"].items()}
+            return {
+                k: self.provider.network.ecosystem.decode_address(v)
+                for k, v in global_config_raw_dict["entries"].items()
+            }
         return {}
 
     @property
