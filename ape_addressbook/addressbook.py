@@ -4,7 +4,7 @@ from typing import Dict, Iterator
 
 from ape.api.config import PluginConfig
 from ape.types import AddressType
-from ape.utils import ManagerAccessMixin, to_address
+from ape.utils import ManagerAccessMixin
 
 
 class AddressBookConfig(PluginConfig):
@@ -20,7 +20,10 @@ class AddressBook(ManagerAccessMixin):
     def global_config(self) -> Dict[str, AddressType]:
         if self.global_config_file.exists():
             global_config_raw_dict = json.loads(self.global_config_file.read_text())
-            return {k: to_address(v) for k, v in global_config_raw_dict["entries"].items()}
+            return {
+                k: self.provider.network.ecosystem.decode_address(v)
+                for k, v in global_config_raw_dict["entries"].items()
+            }
         return {}
 
     @property
@@ -52,7 +55,7 @@ class AddressBook(ManagerAccessMixin):
             raise Exception()
 
         global_config = self.global_config
-        global_config[alias] = to_address(address)
+        global_config[alias] = self.provider.network.ecosystem.decode_address(address)
         self.global_config_file.write_text(json.dumps({"entries": global_config}))
 
 
