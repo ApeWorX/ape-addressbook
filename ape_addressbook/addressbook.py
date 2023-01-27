@@ -4,19 +4,45 @@ from typing import Dict, Iterator, Optional, cast
 
 from ape.api import PluginConfig
 from ape.exceptions import AccountsError
+from ape.logging import logger
 from ape.types import AddressType, BaseModel
 from ape.utils import ManagerAccessMixin
+from eth_utils import is_checksum_address, to_checksum_address
+from pydantic import validator
+
+
+def _validate_entries(entries: Dict) -> Dict:
+    validated: Dict[str, AddressType] = {}
+    for k, v in entries.items():
+
+        # Attempt to handle EVM-like addresses but if it fails,
+        # let it be in case it is for a more unique ecosystem.
+        try:
+            if not is_checksum_address(v):
+                v = to_checksum_address(v)
+
+        except Exception as err:
+            logger.debug(f"Unable to checksum '{k}={v}'. Error:\n{err}")
+
+        validated[str(k)] = v
+
+    return validated
 
 
 class AddressBookConfig(PluginConfig):
     entries: Dict[str, AddressType] = {}
 
+    @validator("entries", pre=True)
+    def validate_entries(cls, entries):
+        return _validate_entries(entries)
+
 
 class GlobalAddressBook(BaseModel):
     entries: Dict[str, AddressType] = {}
 
-    def __getitem__(self, item):
-        return self.entries
+    @validator("entries", pre=True)
+    def validate_entries(cls, entries):
+        return _validate_entries(entries)
 
 
 class AddressBook(ManagerAccessMixin):
@@ -62,7 +88,8 @@ class AddressBook(ManagerAccessMixin):
         may contain more addressbook entries.
         """
 
-        return cast(AddressBookConfig, self.config_manager.get_config("addressbook"))
+        config_obj = self.config_manager.get_config("addressbook")
+        return cast(AddressBookConfig, config_obj)
 
     @property
     def registry(self) -> Dict[str, AddressType]:
@@ -71,8 +98,8 @@ class AddressBook(ManagerAccessMixin):
         and project addresses.
         """
 
-        registry = self.global_config.dict()
-        registry.update(self.config.dict())
+        registry = self.global_config.dict().get("entries", [])
+        registry.update(self.config.dict().get("entries", []))
         return registry
 
     @property
@@ -114,7 +141,9 @@ class AddressBook(ManagerAccessMixin):
         if ecosystem_name is None and self.network_manager.active_provider:
             ecosystem = self.provider.network.ecosystem
         elif ecosystem_name is not None:
-            ecosystem = self.network_manager.ecosystems.get(ecosystem_name)
+            ecosystem = (
+                self.network_manager.ecosystems.get(ecosystem_name) or self.network_manager.ethereum
+            )
         else:
             # Default to ethereum
             ecosystem = self.network_manager.ethereum

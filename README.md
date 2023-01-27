@@ -28,15 +28,28 @@ python3 setup.py install
 
 ## Quick Usage
 
-Use the addressbook to manage addresses in scripts or console sessions:
+To use the addressbook in a project, add common addresses to your `ape-config.yaml` file like this:
+
+```yaml
+addressbook:
+  entries:
+    shared_account: "0x2192f6112a026bce4047CeD2A16553Fd31E798B6"
+```
+
+Then, to use the address, import the addressbook and access it via the alias set in the config:
 
 ```python
-from ape import accounts
 from ape_addressbook import addressbook
 
-me = accounts.load("me")
-bob = addressbook["bob"]
-me.transfer(bob, "1000 ETH")
+address = addressbook["shared_account"]
+```
+
+You can also add global addresses:
+
+```python
+from ape_addressbook import addressbook
+
+addressbook.set_global_entry("global_address", "0x2192f6112a026bce4047CeD2A16553Fd31E798B6")
 ```
 
 ## Development
