@@ -1,10 +1,10 @@
 # Quick Start
 
-Ape plugin that allows tracking addresses and contracts in projects and globally
+Ape plugin that allows tracking addresses and contracts in projects and globally.
 
 ## Dependencies
 
-* [python3](https://www.python.org/downloads) version 3.8 or greater, python3-dev
+- [python3](https://www.python.org/downloads) version 3.8 or greater, python3-dev
 
 ## Installation
 
@@ -28,7 +28,16 @@ python3 setup.py install
 
 ## Quick Usage
 
-TODO: Describe library overview in code
+Use the addressbook to manage addresses in scripts or console sessions:
+
+```python
+from ape import accounts
+from ape_addressbook import addressbook
+
+me = accounts.load("me")
+bob = addressbook["bob"]
+me.transfer(bob, "1000 ETH")
+```
 
 ## Development
 
