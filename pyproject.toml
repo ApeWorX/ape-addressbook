@@ -3,6 +3,8 @@ requires = ["setuptools>=51.1.1", "wheel", "setuptools_scm[toml]>=5.0"]
 
 [tool.mypy]
 exclude = "build/"
+check_untyped_defs = true
+plugins = ["pydantic.mypy"]
 
 [tool.setuptools_scm]
 write_to = "ape_addressbook/version.py"
@@ -19,7 +21,6 @@ include = '\.pyi?$'
 
 [tool.pytest.ini_options]
 addopts = """
-    -n auto
     -p no:ape_test
     --cov-branch
     --cov-report term
