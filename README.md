@@ -51,9 +51,3 @@ from ape_addressbook import addressbook
 
 addressbook.set_global_entry("global_address", "0x2192f6112a026bce4047CeD2A16553Fd31E798B6")
 ```
-
-## Development
-
-This project is in development and should be considered a beta.
-Things might not be in their final state and breaking changes may occur.
-Comments, questions, criticisms and pull requests are welcomed.
