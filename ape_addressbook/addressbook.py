@@ -14,7 +14,6 @@ from pydantic import validator
 def _validate_entries(entries: Dict) -> Dict:
     validated: Dict[str, AddressType] = {}
     for k, v in entries.items():
-
         # Attempt to handle EVM-like addresses but if it fails,
         # let it be in case it is for a more unique ecosystem.
         try:
