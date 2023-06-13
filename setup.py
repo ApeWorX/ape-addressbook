@@ -10,7 +10,7 @@ extras_require = {
         "hypothesis>=6.2.0,<7.0",  # Strategy-based fuzzer
     ],
     "lint": [
-        "black>=23.3.0,<24",  # auto-formatter and linter 
+        "black>=23.3.0,<24",  # auto-formatter and linter
         "mypy>=0.991,<1",  # Static type analyzer
         "types-setuptools",  # Needed due to mypy typeshed
         "flake8>=6.0.0,<7",  # Style linter
