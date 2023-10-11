@@ -5,7 +5,7 @@ from ape.logging import logger
 from ape.types import AddressType
 from ape.utils import ManagerAccessMixin
 from eth_utils import is_checksum_address, to_checksum_address
-from pydantic import validator
+from pydantic import root_validator
 
 
 def _validate_entries(entries: Dict) -> Dict:
@@ -26,9 +26,9 @@ def _validate_entries(entries: Dict) -> Dict:
 
 
 class AddressBookConfig(PluginConfig):
-    entries: Dict[str, AddressType] = {}
+    __root__: Dict[str, AddressType] = {}
 
-    @validator("entries", pre=True)
+    @root_validator(pre=True)
     def validate_entries(cls, entries):
         return _validate_entries(entries)
 

@@ -7,7 +7,7 @@ def test_config(project_alias_unchecksummed, project_alias_no_quotes, project_ad
     project's config as well as handle checksumming them if needbe.
     """
 
-    actual = addressbook.config.entries
+    actual = addressbook.config
     assert len(actual) == 2
     assert actual[project_alias_unchecksummed] == project_address
     assert actual[project_alias_no_quotes] == project_address

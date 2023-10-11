@@ -13,7 +13,6 @@ PROJECT_ADDRESS = to_checksum_address(PROJECT_ADDRESS_NON_CHECKSUMMED)
 
 APE_CONFIG = rf"""
 addressbook:
-  entries:
     # This address purposely is not checksummed.
     {PROJECT_ALIAS_UNCHECKSUMMED}: '{PROJECT_ADDRESS_NON_CHECKSUMMED}'
 
