@@ -32,7 +32,6 @@ To use the addressbook in a project, add common addresses to your `ape-config.ya
 
 ```yaml
 addressbook:
-  entries:
     shared_account: "0x2192f6112a026bce4047CeD2A16553Fd31E798B6"
 ```
 
@@ -42,12 +41,4 @@ Then, to use the address, import the addressbook and access it via the alias set
 from ape_addressbook import addressbook
 
 address = addressbook["shared_account"]
-```
-
-You can also add global addresses:
-
-```python
-from ape_addressbook import addressbook
-
-addressbook.set_global_entry("global_address", "0x2192f6112a026bce4047CeD2A16553Fd31E798B6")
 ```

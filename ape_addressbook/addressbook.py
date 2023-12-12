@@ -1,14 +1,11 @@
-import json
-from pathlib import Path
-from typing import Dict, Iterator, Optional, cast
+from typing import Dict, Iterator, cast
 
+from ape._pydantic_compat import root_validator
 from ape.api import PluginConfig
-from ape.exceptions import AccountsError
 from ape.logging import logger
-from ape.types import AddressType, BaseModel
+from ape.types import AddressType
 from ape.utils import ManagerAccessMixin
 from eth_utils import is_checksum_address, to_checksum_address
-from pydantic import validator
 
 
 def _validate_entries(entries: Dict) -> Dict:
@@ -29,19 +26,15 @@ def _validate_entries(entries: Dict) -> Dict:
 
 
 class AddressBookConfig(PluginConfig):
-    entries: Dict[str, AddressType] = {}
-
-    @validator("entries", pre=True)
+    @root_validator(pre=True)
     def validate_entries(cls, entries):
         return _validate_entries(entries)
 
+    def __len__(self) -> int:
+        return len(self.dict())
 
-class GlobalAddressBook(BaseModel):
-    entries: Dict[str, AddressType] = {}
-
-    @validator("entries", pre=True)
-    def validate_entries(cls, entries):
-        return _validate_entries(entries)
+    class Config:
+        extra = "allow"
 
 
 class AddressBook(ManagerAccessMixin):
@@ -62,25 +55,6 @@ class AddressBook(ManagerAccessMixin):
     """
 
     @property
-    def global_config_file(self) -> Path:
-        """
-        The file path to the global addressbook entries JSON file,
-        located in Ape's data folder.
-        """
-
-        return self.config_manager.DATA_FOLDER / "addressbook.json"
-
-    @property
-    def global_config(self) -> GlobalAddressBook:
-        """
-        All of the entries stored in the global addressbook JSON file.
-        """
-
-        file = self.global_config_file
-        cls = GlobalAddressBook
-        return cls.parse_file(file) if file.is_file() else cls()
-
-    @property
     def config(self) -> AddressBookConfig:
         """
         The config entry from your project's ``ape-config.yaml`` file, which
@@ -97,9 +71,10 @@ class AddressBook(ManagerAccessMixin):
         and project addresses.
         """
 
-        registry = self.global_config.dict().get("entries", [])
-        registry.update(self.config.dict().get("entries", []))
-        return registry
+        data = self.config.dict()
+
+        # Sorted for consistency's sake.
+        return {k: data[k] for k in sorted(data)}
 
     @property
     def aliases(self) -> Iterator[str]:
@@ -107,6 +82,7 @@ class AddressBook(ManagerAccessMixin):
         An iterator over all aliases in the registry.
         """
 
+        # NOTE: self.registry is sorted.
         for alias in self.registry:
             yield alias
 
@@ -118,38 +94,6 @@ class AddressBook(ManagerAccessMixin):
             raise IndexError(f"Alias '{alias}' not in addressbook.")
 
         return self.registry[alias]
-
-    def set_global_entry(
-        self, alias: str, address: AddressType, ecosystem_name: Optional[str] = None
-    ):
-        """
-        Add an address in the global registry of the addressbook.
-
-        Args:
-            alias (str): An alias for the address.
-            address (``AddressType``): The address.
-            ecosystem_name (Optional[str]): The ecosystem the address belongs to.
-              This is only used to help decode the address. The parameter defaults
-              to ``None`` but will use the connected provider's ecosystem if is connected.
-              Else, will attempt to use Ethereum, which should work for any EVM ecosystem.
-        """
-
-        if alias in self.aliases:
-            raise AccountsError(f"Alias '{alias}' already in addressbook.")
-
-        if ecosystem_name is None and self.network_manager.active_provider:
-            ecosystem = self.provider.network.ecosystem
-        elif ecosystem_name is not None:
-            ecosystem = (
-                self.network_manager.ecosystems.get(ecosystem_name) or self.network_manager.ethereum
-            )
-        else:
-            # Default to ethereum
-            ecosystem = self.network_manager.ethereum
-
-        global_config = self.global_config.copy()
-        global_config.entries[alias] = ecosystem.decode_address(address)
-        self.global_config_file.write_text(json.dumps(global_config.dict()))
 
 
 addressbook = AddressBook()
