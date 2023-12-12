@@ -5,7 +5,7 @@ from ape.logging import logger
 from ape.types import AddressType
 from ape.utils import ManagerAccessMixin
 from eth_utils import is_checksum_address, to_checksum_address
-from pydantic import root_validator
+from ape._pydantic_compat import root_validator
 
 
 def _validate_entries(entries: Dict) -> Dict:
