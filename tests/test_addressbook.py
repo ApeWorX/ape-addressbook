@@ -29,10 +29,9 @@ def test_aliases(project_alias_unchecksummed, project_alias_no_quotes):
     The aliases includes both project and global addresses.
     """
 
-    assert list(addressbook.aliases) == [
-        project_alias_unchecksummed,
-        project_alias_no_quotes,
-    ]
+    actual = list(addressbook.aliases)
+    expected = [project_alias_no_quotes, project_alias_unchecksummed]
+    assert actual == expected
 
 
 def test_contains(

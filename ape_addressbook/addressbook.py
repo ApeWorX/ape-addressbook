@@ -26,11 +26,15 @@ def _validate_entries(entries: Dict) -> Dict:
 
 
 class AddressBookConfig(PluginConfig):
-    __root__: Dict[str, AddressType] = {}
-
     @root_validator(pre=True)
     def validate_entries(cls, entries):
         return _validate_entries(entries)
+
+    def __len__(self) -> int:
+        return len(self.dict())
+
+    class Config:
+        extra = "allow"
 
 
 class AddressBook(ManagerAccessMixin):
@@ -67,7 +71,10 @@ class AddressBook(ManagerAccessMixin):
         and project addresses.
         """
 
-        return self.config.dict()
+        data = self.config.dict()
+
+        # Sorted for consistency's sake.
+        return {k: data[k] for k in sorted(data)}
 
     @property
     def aliases(self) -> Iterator[str]:
@@ -75,6 +82,7 @@ class AddressBook(ManagerAccessMixin):
         An iterator over all aliases in the registry.
         """
 
+        # NOTE: self.registry is sorted.
         for alias in self.registry:
             yield alias
 
