@@ -1,11 +1,12 @@
 from typing import Dict, Iterator, cast
 
-from ape._pydantic_compat import root_validator
 from ape.api import PluginConfig
 from ape.logging import logger
 from ape.types import AddressType
 from ape.utils import ManagerAccessMixin
 from eth_utils import is_checksum_address, to_checksum_address
+from pydantic import model_validator
+from pydantic_settings import SettingsConfigDict
 
 
 def _validate_entries(entries: Dict) -> Dict:
@@ -26,15 +27,15 @@ def _validate_entries(entries: Dict) -> Dict:
 
 
 class AddressBookConfig(PluginConfig):
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def validate_entries(cls, entries):
         return _validate_entries(entries)
 
     def __len__(self) -> int:
-        return len(self.dict())
+        return len(self.model_dump())
 
-    class Config:
-        extra = "allow"
+    model_config = SettingsConfigDict(extra="allow")
 
 
 class AddressBook(ManagerAccessMixin):
@@ -71,7 +72,7 @@ class AddressBook(ManagerAccessMixin):
         and project addresses.
         """
 
-        data = self.config.dict()
+        data = self.config.model_dump()
 
         # Sorted for consistency's sake.
         return {k: data[k] for k in sorted(data)}
