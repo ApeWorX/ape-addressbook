@@ -60,7 +60,7 @@ setup(
     url="https://github.com/ApeWorX/ape-addressbook",
     include_package_data=True,
     install_requires=[
-        "eth-ape>=0.7.0,<0.8",
+        "eth-ape>=0.8.0,<0.9",
         "pydantic",  # Use same version as eth-ape.
         "pydantic-settings",  # Use same version as eth-ape.
     ],
