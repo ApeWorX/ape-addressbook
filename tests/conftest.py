@@ -1,9 +1,7 @@
-import tempfile
-from pathlib import Path
-
 import ape
 import pytest
 from ape.managers.config import CONFIG_FILE_NAME
+from ape.utils import create_tempdir
 from eth_utils import to_checksum_address
 
 PROJECT_ALIAS_UNCHECKSUMMED = "project_entry_quotes"
@@ -28,9 +26,8 @@ def madeup_project():
     and sets a temporary project.
     """
 
-    with tempfile.TemporaryDirectory() as temp_dir:
+    with create_tempdir() as path:
         # Create the config file with address entries.
-        path = Path(temp_dir)
         config_file = path / CONFIG_FILE_NAME
         config_file.touch()
         config_file.write_text(APE_CONFIG)

@@ -1,4 +1,5 @@
-from typing import Dict, Iterator, cast
+from collections.abc import Iterator
+from typing import cast
 
 from ape.api import PluginConfig
 from ape.logging import logger
@@ -9,8 +10,8 @@ from pydantic import model_validator
 from pydantic_settings import SettingsConfigDict
 
 
-def _validate_entries(entries: Dict) -> Dict:
-    validated: Dict[str, AddressType] = {}
+def _validate_entries(entries: dict) -> dict:
+    validated: dict[str, AddressType] = {}
     for k, v in entries.items():
         # Attempt to handle EVM-like addresses but if it fails,
         # let it be in case it is for a more unique ecosystem.
@@ -66,7 +67,7 @@ class AddressBook(ManagerAccessMixin):
         return cast(AddressBookConfig, config_obj)
 
     @property
-    def registry(self) -> Dict[str, AddressType]:
+    def registry(self) -> dict[str, AddressType]:
         """
         The complete registry of addresses, including both global
         and project addresses.
