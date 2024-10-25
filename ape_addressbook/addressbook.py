@@ -62,7 +62,6 @@ class AddressBook(ManagerAccessMixin):
         The config entry from your project's ``ape-config.yaml`` file, which
         may contain more addressbook entries.
         """
-
         config_obj = self.config_manager.get_config("addressbook")
         return cast(AddressBookConfig, config_obj)
 
