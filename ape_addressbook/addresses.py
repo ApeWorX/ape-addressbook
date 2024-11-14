@@ -1,17 +1,19 @@
 from collections.abc import Iterator
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from ape.api import PluginConfig
 from ape.logging import logger
-from ape.types import AddressType
 from ape.utils import ManagerAccessMixin
 from eth_utils import is_checksum_address, to_checksum_address
 from pydantic import model_validator
 from pydantic_settings import SettingsConfigDict
 
+if TYPE_CHECKING:
+    from ape.types import AddressType
+
 
 def _validate_entries(entries: dict) -> dict:
-    validated: dict[str, AddressType] = {}
+    validated: dict[str, "AddressType"] = {}
     for k, v in entries.items():
         # Attempt to handle EVM-like addresses but if it fails,
         # let it be in case it is for a more unique ecosystem.
@@ -67,7 +69,7 @@ class AddressBook(ManagerAccessMixin):
         return cast(AddressBookConfig, config_obj)
 
     @property
-    def registry(self) -> dict[str, AddressType]:
+    def registry(self) -> dict[str, "AddressType"]:
         """
         The complete registry of addresses, including both global
         and project addresses.
@@ -91,11 +93,14 @@ class AddressBook(ManagerAccessMixin):
     def __contains__(self, alias: str) -> bool:
         return alias in self.aliases
 
-    def __getitem__(self, alias: str) -> AddressType:
+    def __getitem__(self, alias: str) -> "AddressType":
         if alias not in self.aliases:
             raise IndexError(f"Alias '{alias}' not in addressbook.")
 
         return self.registry[alias]
+
+    def __iter__(self) -> Iterator[str]:
+        yield from self.aliases  # dict like behavior
 
 
 addressbook = AddressBook()
