@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, cast
 from ape.api import PluginConfig
 from ape.logging import logger
 from ape.utils import ManagerAccessMixin
-from eth_utils import is_checksum_address, to_checksum_address
+from cchecksum import to_checksum_address
 from pydantic import model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -18,9 +18,7 @@ def _validate_entries(entries: dict) -> dict:
         # Attempt to handle EVM-like addresses but if it fails,
         # let it be in case it is for a more unique ecosystem.
         try:
-            if not is_checksum_address(v):
-                v = to_checksum_address(v)
-
+            v = to_checksum_address(v)
         except Exception as err:
             logger.debug(f"Unable to checksum '{k}={v}'. Error:\n{err}")
 
