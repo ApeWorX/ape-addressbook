@@ -63,6 +63,7 @@ setup(
         "eth-ape>=0.8.1,<0.9",
         "pydantic",  # Use same version as eth-ape.
         "pydantic-settings",  # Use same version as eth-ape.
+        "cchecksum>=0.0.3,<1",
     ],
     python_requires=">=3.9,<4",
     extras_require=extras_require,
