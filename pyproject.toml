@@ -27,6 +27,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "eth-ape>=0.8.1,<0.9",
+    "pydantic",  # Use same version as eth-ape.
 ]
 dynamic = ["version"]
 
