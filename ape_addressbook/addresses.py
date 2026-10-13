@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def _validate_entries(entries: dict) -> dict:
-    validated: dict[str, "AddressType"] = {}
+    validated: dict[str, AddressType] = {}
     for k, v in entries.items():
         # Attempt to handle EVM-like addresses but if it fails,
         # let it be in case it is for a more unique ecosystem.
@@ -66,7 +66,7 @@ class AddressBook(ManagerAccessMixin):
         """
 
         config_obj = self.config_manager.get_config("addressbook")
-        return cast(AddressBookConfig, config_obj)
+        return cast("AddressBookConfig", config_obj)
 
     @property
     def registry(self) -> dict[str, "AddressType"]:
@@ -87,8 +87,7 @@ class AddressBook(ManagerAccessMixin):
         """
 
         # NOTE: self.registry is sorted.
-        for alias in self.registry:
-            yield alias
+        yield from self.registry
 
     def __contains__(self, alias: str) -> bool:
         return alias in self.aliases
